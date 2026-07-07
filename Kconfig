@@ -1,0 +1,57 @@
+# Application-level configuration for the DB01 hearing-aid firmware.
+source "Kconfig.zephyr"
+
+menu "DB01 Hearing Aid"
+
+choice
+	prompt "Microphone frontend"
+	default MIC_MP34DT01_PDM
+	help
+	  Selects the physical microphone and the capture peripheral used to
+	  read it. The two supported parts use different interfaces.
+
+config MIC_MP34DT01_PDM
+	bool "MP34DT01 / IMP34DT05 (PDM, via DMIC)"
+	help
+	  Digital PDM MEMS microphone. Matches the mics on the DB01 schematic
+	  (IMP34DT05). Captured through the Zephyr DMIC (nRF PDM) driver.
+
+config MIC_INMP441_I2S
+	bool "INMP441 (I2S)"
+	help
+	  24-bit I2S MEMS microphone. Captured through the Zephyr I2S driver.
+
+endchoice
+
+config AUDIO_SAMPLE_RATE_HZ
+	int "Audio sample rate (Hz)"
+	default 16000
+	help
+	  Voice-band sample rate. 16 kHz keeps the FFT small while covering the
+	  speech range important for a hearing aid.
+
+config AUDIO_FRAME_SAMPLES
+	int "FFT frame length (samples)"
+	default 256
+	help
+	  Must be a power of two for the real FFT. 256 @ 16 kHz = 16 ms frames.
+
+config AUDIO_HOP_SAMPLES
+	int "Analysis hop (samples)"
+	default 128
+	help
+	  Overlap-add stride. Half the frame length gives 50% overlap.
+
+config NOISE_REDUCTION_USE_MODEL
+	bool "Use TF-Lite Micro noise-reduction model"
+	default n
+	help
+	  When enabled, per-bin suppression gains come from a trained model
+	  (src/ai/model). When disabled, a spectral-subtraction fallback runs so
+	  the pipeline is testable without a model.
+
+config BLE_DEVICE_NAME
+	string "BLE advertised name"
+	default "DB01-HA"
+
+endmenu

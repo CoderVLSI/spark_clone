@@ -1,0 +1,35 @@
+# Zephyr / nRF Connect SDK build output
+build/
+build_*/
+twister-out*/
+*.o
+*.a
+*.elf
+*.hex
+*.bin
+*.map
+
+# west workspace (SDK is fetched, not vendored)
+.west/
+bootloader/
+modules/
+nrf/
+nrfxlib/
+zephyr/
+tools/
+test/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# AI model artifacts (large; store via LFS or fetch script)
+*.tflite
+*.onnx
+!src/ai/model/*.tflite.placeholder

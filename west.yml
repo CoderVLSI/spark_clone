@@ -1,0 +1,22 @@
+# west manifest — pins the nRF Connect SDK used to build this application.
+#
+# Usage:
+#   west init -l .      # treat this repo as the manifest repo
+#   west update         # fetch NCS + Zephyr + modules at the revision below
+#
+# Bump `revision` to move to a newer SDK. v2.6.x is the baseline this scaffold
+# targets (DMIC, I2S, CMSIS-DSP, and TF-Lite Micro modules all present).
+manifest:
+  remotes:
+    - name: nrfconnect
+      url-base: https://github.com/nrfconnect
+
+  projects:
+    - name: nrf
+      remote: nrfconnect
+      repo-path: sdk-nrf
+      revision: v2.6.1
+      import: true   # pulls Zephyr, nrfxlib, CMSIS, TF-Lite Micro, etc.
+
+  self:
+    path: application

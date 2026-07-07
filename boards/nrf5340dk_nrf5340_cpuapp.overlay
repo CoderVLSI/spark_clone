@@ -1,0 +1,51 @@
+/*
+ * Devicetree overlay: microphone wiring for the nRF5340 application core.
+ *
+ * Base board: nRF5340 DK. For the real DB01+nRF5340 hardware, copy this pin
+ * map into a dedicated board definition (see docs/hardware.md) and adjust the
+ * GPIO assignments to the actual layout.
+ *
+ * TODO(hw): confirm every <NRF_PSEL(...)> pin against the DB01 net list.
+ */
+
+/ {
+	chosen {
+		/*
+		 * The DSP pipeline reads from whichever of these the build selects.
+		 * Only one microphone backend is compiled in at a time (Kconfig).
+		 */
+		zephyr,mic-pdm = &pdm0;
+		zephyr,mic-i2s = &i2s0;
+	};
+};
+
+/* --- PDM path: MP34DT01 / IMP34DT05 ------------------------------------- */
+&pinctrl {
+	pdm0_default: pdm0_default {
+		group1 {
+			psels = <NRF_PSEL(PDM_CLK, 0, 26)>,   /* mic CLKK  TODO(hw) */
+				<NRF_PSEL(PDM_DIN, 0, 25)>;   /* mic DOUT  TODO(hw) */
+		};
+	};
+
+	i2s0_default: i2s0_default {
+		group1 {
+			psels = <NRF_PSEL(I2S_SCK_M, 0, 26)>,   /* INMP441 SCK  TODO(hw) */
+				<NRF_PSEL(I2S_LRCK_M, 0, 27)>,  /* INMP441 WS   TODO(hw) */
+				<NRF_PSEL(I2S_SDIN, 0, 25)>;    /* INMP441 SD   TODO(hw) */
+		};
+	};
+};
+
+&pdm0 {
+	status = "okay";
+	pinctrl-0 = <&pdm0_default>;
+	pinctrl-names = "default";
+	clock-source = "PCLK32M_HFXO";
+};
+
+&i2s0 {
+	status = "okay";
+	pinctrl-0 = <&i2s0_default>;
+	pinctrl-names = "default";
+};
