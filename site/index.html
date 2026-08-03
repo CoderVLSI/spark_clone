@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102019">
+<title>PokePlant — XIAO ESP32-C6 Installer</title>
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+<style>
+:root{--bg:#0d1711;--card:#16271d;--ink:#f4fff6;--muted:#afc7b4;--leaf:#68df84;--line:#2f4d38}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:radial-gradient(circle at 85% 5%,#214a2c 0,transparent 33%),var(--bg);color:var(--ink)}
+main{width:min(980px,92vw);margin:auto;padding:30px 0 60px}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:22px}.card{background:linear-gradient(160deg,#1f3a28,#122218);border:1px solid var(--line);border-radius:28px;padding:28px;box-shadow:0 24px 70px #0006}
+h1{font-size:clamp(2.4rem,7vw,5rem);line-height:.92;margin:16px 0}h1 span{color:var(--leaf)}p{color:var(--muted);line-height:1.65}.install{margin-top:24px;padding:20px;border-radius:20px;background:#0e1c13;border:1px solid #31543b}.install button{border:0;border-radius:15px;padding:14px 22px;font-weight:900;font-size:1rem;background:var(--leaf);color:#09200f;cursor:pointer}.pet{min-height:420px;display:grid;place-items:center}.screen{width:230px;height:300px;background:#c7f0d1;border:12px solid #243f2b;border-radius:34px;box-shadow:inset 0 0 0 4px #7ea88a,0 30px 50px #0007;padding:18px;color:#17301e}.status{display:flex;justify-content:space-between;font-weight:900}.scene{height:175px;display:grid;place-items:center}.creature{position:relative;width:92px;height:105px;background:#68df84;border-radius:46% 46% 42% 42%;box-shadow:inset -12px -11px #39a854}.creature:before,.creature:after{content:"";position:absolute;top:-28px;width:52px;height:34px;background:#3ebc61;border-radius:100% 0}.creature:before{left:-6px;transform:rotate(20deg)}.creature:after{right:-6px;transform:scaleX(-1) rotate(20deg)}.eyes{position:absolute;top:44px;left:24px;width:8px;height:8px;border-radius:50%;background:#17301e;box-shadow:36px 0 #17301e}.mouth{position:absolute;top:63px;left:39px;width:17px;height:9px;border-bottom:3px solid #17301e;border-radius:50%}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}.mini{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px}.steps{margin-top:18px}.step{padding:14px 0;border-top:1px solid var(--line)}code{background:#09110c;padding:.18em .45em;border-radius:6px;color:#b8f7c5}@media(max-width:780px){.hero,.grid{grid-template-columns:1fr}.pet{min-height:380px}}
+</style>
+</head>
+<body><main>
+<section class="hero">
+<div class="card"><div style="color:var(--leaf);font-weight:800">XIAO ESP32-C6 WEB INSTALLER</div><h1>Grow your own <span>PokePlant.</span></h1><p>A battery-friendly plant companion that reads soil moisture, temperature and humidity, gains XP, sleeps at night and evolves from seed to Garden Guardian.</p>
+<div class="install"><h2>Flash from your browser</h2><p>Connect the XIAO with a data-capable USB-C cable, then press Install.</p><esp-web-install-button manifest="firmware/manifest.json"><button slot="activate">Install PokePlant</button><span slot="unsupported">Use desktop Chrome or Edge with Web Serial.</span><span slot="not-allowed">Open this page over HTTPS.</span></esp-web-install-button><p><small>Target: Seeed Studio XIAO ESP32-C6. Flashing may erase existing firmware.</small></p></div></div>
+<div class="card pet"><div class="screen"><div class="status"><span>Leafling</span><span>Lv2</span></div><div class="scene"><div class="creature"><div class="eyes"></div><div class="mouth"></div></div></div><strong>Soil 72%</strong><p style="color:#17301e;margin:.35rem 0">Air 27°C · 58%<br>XP 286 · Day 4</p></div></div>
+</section>
+<section class="grid"><article class="mini"><h3>🌱 Four stages</h3><p>Seedling Egg → Leafling → Bloomon → Garden Guardian.</p></article><article class="mini"><h3>🌙 Deep-sleep friendly</h3><p>Wake, sample, update, upload and return to sleep.</p></article><article class="mini"><h3>📡 Local dashboard</h3><p>Optional Wi-Fi dashboard for live plant readings and evolution status.</p></article></section>
+<section class="card steps"><h2>Before flashing</h2><div class="step"><b>1. Correct board</b><p>Use the Seeed Studio XIAO ESP32-C6.</p></div><div class="step"><b>2. Data cable</b><p>Use a USB-C cable that supports data.</p></div><div class="step"><b>3. Bootloader mode</b><p>If detection fails, hold BOOT, tap RESET, release BOOT and retry.</p></div><div class="step"><b>4. Customize later</b><p>Edit <code>firmware/include/config.h</code> for pins, Wi-Fi and timing.</p></div></section>
+</main></body></html>
