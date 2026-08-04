@@ -21,12 +21,12 @@ jobs:
       - run: pip install platformio esptool
       - name: Build XIAO ESP32-C6 firmware
         working-directory: firmware
-        run: pio run
+        run: pio run -e seeed_xiao_esp32_c6
       - name: Create merged web-flasher image
         working-directory: firmware
         shell: bash
         run: |
-          ENV=.pio/build/seeed_xiao_esp32c6
+          ENV=.pio/build/seeed_xiao_esp32_c6
           BOOTAPP=$(find ~/.platformio -name boot_app0.bin | head -1)
           test -f "$ENV/bootloader.bin"
           test -f "$ENV/partitions.bin"
