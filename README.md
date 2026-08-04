@@ -1,4 +1,6 @@
-# PokePlant website + web flasher
+# SproutSaga website + web flasher
+
+SproutSaga is an evolving plant-companion project for the Seeed Studio XIAO ESP32-C6.
 
 This repository contains:
 
