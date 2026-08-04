@@ -32,4 +32,4 @@
 #define WIFI_PASS ""
 
 // Device creates this simple local web dashboard when Wi-Fi connects.
-#define DEVICE_NAME "PokePlant"
+#define DEVICE_NAME "SproutSaga"
