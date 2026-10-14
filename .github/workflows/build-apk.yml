@@ -27,6 +27,18 @@ jobs:
           java-version: 17
 
       # The ubuntu-latest runner image already ships the Android SDK (ANDROID_HOME) with licenses accepted.
+      # Gradle's own NDK download occasionally returns a corrupt zip, so install it up front with retries.
+      - name: Install NDK (with retries)
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SDKM" ] || SDKM="$(command -v sdkmanager)"
+          for i in 1 2 3 4; do
+            rm -rf "$ANDROID_HOME/ndk/27.1.12297006"
+            if yes | "$SDKM" --install "ndk;27.1.12297006"; then exit 0; fi
+            echo "NDK install attempt $i failed, retrying..."; sleep $((i * 10))
+          done
+          exit 1
+
       - run: npm ci
 
       # Generates the native android/ project from app.json (icon, package name, plugins).
