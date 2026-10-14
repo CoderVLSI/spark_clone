@@ -2,6 +2,9 @@
 
 An unofficial, chat-only Android app (React Native / Expo) for fans of Shraddha Kapoor, powered by the Gemini API.
 
+- Dark theme with pink accents, a welcome screen with suggested questions, typing indicator, retry on errors, and light markdown rendering of replies.
+- Layout uses `react-native-safe-area-context`: the header clears the status bar and display cutout, and the composer clears the system navigation bar and rides above the keyboard.
+- Settings is a bottom sheet with a scrolling body and a pinned Save button.
 - Chat UI backed by Gemini with Google Search grounding, so answers about recent news cite sources.
 - A daily update is fetched automatically the first time you open the app each day.
 - Attach a photo with 📎 and ask about it. The bot describes what's visible and does not name people from faces.
