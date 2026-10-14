@@ -126,7 +126,7 @@ export default function App() {
       <StatusBar style="light" />
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.title}>Shraddu ♥️</Text>
+          <Text style={styles.title}>Shraddha Fan Chat</Text>
           <Text style={styles.subtitle}>Unofficial fan assistant · powered by Gemini</Text>
         </View>
         <Pressable onPress={() => setShowSettings(true)} style={styles.iconBtn}>
