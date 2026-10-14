@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Linking, Modal, Platform,
-  Pressable, SafeAreaView, StyleSheet, Switch, Text, TextInput, View,
+  Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { askGemini, DAILY_PROMPT, DEFAULT_MODEL } from './src/gemini';
@@ -9,6 +9,12 @@ import { getSetting, loadChat, saveChat, setSetting } from './src/storage';
 import { cancelDailyReminder, scheduleDailyReminder } from './src/notifications';
 
 const OFFICIAL_INSTAGRAM = 'https://www.instagram.com/shraddhakapoor/';
+const LINKS = [
+  { label: '📷 Instagram (official)', url: OFFICIAL_INSTAGRAM },
+  { label: '📰 Latest news', url: 'https://news.google.com/search?q=Shraddha%20Kapoor' },
+  { label: '🖼️ Photos', url: 'https://www.google.com/search?tbm=isch&q=Shraddha+Kapoor' },
+  { label: '🎬 YouTube', url: 'https://www.youtube.com/results?search_query=Shraddha+Kapoor' },
+];
 const today = () => new Date().toISOString().slice(0, 10);
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -122,12 +128,19 @@ export default function App() {
           <Text style={styles.title}>Shraddha Fan Chat</Text>
           <Text style={styles.subtitle}>Unofficial fan assistant · powered by Gemini</Text>
         </View>
-        <Pressable onPress={() => Linking.openURL(OFFICIAL_INSTAGRAM)} style={styles.iconBtn}>
-          <Text style={styles.icon}>📷</Text>
-        </Pressable>
         <Pressable onPress={() => setShowSettings(true)} style={styles.iconBtn}>
           <Text style={styles.icon}>⚙️</Text>
         </Pressable>
+      </View>
+
+      <View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.links}>
+          {LINKS.map((l) => (
+            <Pressable key={l.url} style={styles.chip} onPress={() => Linking.openURL(l.url)}>
+              <Text style={styles.chipText}>{l.label}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
       </View>
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -190,6 +203,9 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderColor: '#1d1d26' },
   title: { color: '#fff', fontSize: 18, fontWeight: '700' },
   subtitle: { color: '#8a8a99', fontSize: 12, marginTop: 2 },
+  links: { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
+  chip: { backgroundColor: '#1d1d26', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: '#2c2c38' },
+  chipText: { color: '#f48fb1', fontSize: 13, fontWeight: '600' },
   iconBtn: { padding: 8 },
   icon: { fontSize: 20 },
   list: { padding: 12, flexGrow: 1 },

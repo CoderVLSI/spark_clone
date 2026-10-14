@@ -7,7 +7,7 @@ An unofficial, chat-only Android app (React Native / Expo) for fans of Shraddha 
 - Optional daily local reminder notification (set the hour in Settings).
 - Your API key is stored with `expo-secure-store` on the device. It is never committed to the repo.
 - The assistant does not impersonate her and does not speculate about her private life.
-- The 📷 button opens her official Instagram instead of scraping photos.
+- A row of link chips (official Instagram, news, photos, YouTube) opens in your browser instead of scraping photos.
 
 ## Run
 
