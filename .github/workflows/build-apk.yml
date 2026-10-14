@@ -1,0 +1,53 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ccr-2437fee9-ao4e1f]
+    paths-ignore: ['README.md']
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - run: npm ci
+
+      # Generates the native android/ project from app.json (icon, package name, plugins).
+      - run: npx expo prebuild --platform android --no-install --clean
+
+      # The Expo template signs release builds with the debug keystore, which is fine for sideloading.
+      - name: Build release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shraddha-fan-chat-apk
+          path: android/app/build/outputs/apk/release/*.apk
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk shraddha-fan-chat.apk
+          gh release create "apk-${{ github.run_number }}" shraddha-fan-chat.apk \
+            --title "APK build #${{ github.run_number }}" \
+            --notes "Sideloadable Android APK. Enable 'Install unknown apps' on your phone, then open the file."

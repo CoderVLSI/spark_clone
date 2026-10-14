@@ -9,6 +9,7 @@ import { getSetting, loadChat, saveChat, setSetting } from './src/storage';
 import { cancelDailyReminder, scheduleDailyReminder } from './src/notifications';
 
 const OFFICIAL_INSTAGRAM = 'https://www.instagram.com/shraddhakapoor/';
+const API_KEY_URL = 'https://aistudio.google.com/apikey';
 const LINKS = [
   { label: '📷 Instagram (official)', url: OFFICIAL_INSTAGRAM },
   { label: '📰 Latest news', url: 'https://news.google.com/search?q=Shraddha%20Kapoor' },
@@ -151,7 +152,16 @@ export default function App() {
           renderItem={renderItem}
           contentContainerStyle={styles.list}
           onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
-          ListEmptyComponent={<Text style={styles.empty}>Ask me anything about her films, songs or latest news.</Text>}
+          ListEmptyComponent={
+            <View>
+              <Text style={styles.empty}>Ask me anything about her films, songs or latest news.</Text>
+              {!apiKey && (
+                <Text style={[styles.keyLink, { textAlign: 'center', marginTop: 12 }]} onPress={() => Linking.openURL(API_KEY_URL)}>
+                  Need a Gemini API key? Get one free →
+                </Text>
+              )}
+            </View>
+          }
         />
         {busy && <Text style={styles.typing}>Thinking…</Text>}
         <View style={styles.inputBar}>
@@ -174,6 +184,9 @@ export default function App() {
           <View style={styles.modal}>
             <Text style={styles.title}>Settings</Text>
             <Text style={styles.label}>Gemini API key (stored securely on this device)</Text>
+            <Text style={styles.keyLink} onPress={() => Linking.openURL(API_KEY_URL)}>
+              Get a free API key → aistudio.google.com/apikey
+            </Text>
             <TextInput style={styles.field} value={apiKey} onChangeText={setApiKey} secureTextEntry
               autoCapitalize="none" autoCorrect={false} placeholder="AIza…" placeholderTextColor="#666" />
             <Text style={styles.label}>Model</Text>
@@ -227,6 +240,7 @@ const styles = StyleSheet.create({
   sendText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   modalWrap: { flex: 1, backgroundColor: '#000a', justifyContent: 'flex-end' },
   modal: { backgroundColor: '#14141c', padding: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+  keyLink: { color: '#82b1ff', fontSize: 13, marginTop: 10, textDecorationLine: 'underline' },
   label: { color: '#aaa', fontSize: 12, marginTop: 14, marginBottom: 6 },
   field: { backgroundColor: '#1d1d26', color: '#fff', borderRadius: 10, padding: 12 },
   switchRow: { flexDirection: 'row', alignItems: 'center', marginTop: 6 },
