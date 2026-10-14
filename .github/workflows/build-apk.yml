@@ -26,8 +26,7 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - uses: android-actions/setup-android@v3
-
+      # The ubuntu-latest runner image already ships the Android SDK (ANDROID_HOME) with licenses accepted.
       - run: npm ci
 
       # Generates the native android/ project from app.json (icon, package name, plugins).
