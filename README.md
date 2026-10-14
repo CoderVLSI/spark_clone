@@ -4,6 +4,8 @@ An unofficial, chat-only Android app (React Native / Expo) for fans of Shraddha 
 
 - Chat UI backed by Gemini with Google Search grounding, so answers about recent news cite sources.
 - A daily update is fetched automatically the first time you open the app each day.
+- Attach a photo with 📎 and ask about it. The bot describes what's visible and does not name people from faces.
+- Settings lists every model your key can use, fetched from the Gemini API (`GET /v1beta/models`). Pick a primary and tap + to add fallbacks. If a model errors, the next one is tried automatically, and the reply says which one answered.
 - Optional daily local reminder notification (set the hour in Settings).
 - Your API key is stored with `expo-secure-store` on the device. It is never committed to the repo.
 - The assistant does not impersonate her and does not speculate about her private life.

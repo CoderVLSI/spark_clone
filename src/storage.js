@@ -29,6 +29,7 @@ export async function loadChat() {
 
 export function saveChat(messages) {
   try {
-    CHAT_FILE.write(JSON.stringify(messages.slice(-200)));
+    // Image bytes are kept in memory only; the saved chat keeps just the picture's uri.
+    CHAT_FILE.write(JSON.stringify(messages.slice(-200).map((m) => ({ ...m, b64: undefined }))));
   } catch {}
 }
