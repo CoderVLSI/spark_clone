@@ -33,6 +33,7 @@ export default function Bubble({ item, maxWidth, onRetry }) {
       <View style={[styles.row, styles.rowMine]}>
         <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={[styles.bubble, styles.mine, { maxWidth }]}>
+          {item.kind === 'voice' && <Text style={styles.voiceTagMine}>🎙 Voice</Text>}
           {image}
           {!!item.text && <Text style={styles.mineText} selectable>{item.text}</Text>}
           {!!item.ts && <Text style={styles.timeMine}>{time(item.ts)}</Text>}
@@ -49,6 +50,12 @@ export default function Bubble({ item, maxWidth, onRetry }) {
           <View style={styles.dailyTag}>
             <Ionicons name="newspaper-outline" size={13} color={colors.pink} />
             <Text style={styles.dailyText}>Daily update</Text>
+          </View>
+        )}
+        {item.kind === 'voice' && (
+          <View style={styles.dailyTag}>
+            <Ionicons name="mic-outline" size={13} color={colors.pink} />
+            <Text style={styles.dailyText}>Voice</Text>
           </View>
         )}
         {item.error ? (
@@ -95,6 +102,7 @@ const styles = StyleSheet.create({
   err: { backgroundColor: colors.dangerBg, borderColor: '#4a2a31' },
   mineText: { ...type.body, color: '#fff' },
   pic: { width: 220, height: 220, borderRadius: radius.sm, marginBottom: 6, backgroundColor: '#000', maxWidth: '100%' },
+  voiceTagMine: { ...type.caption, color: 'rgba(255,255,255,0.8)', marginBottom: 4 },
   time: { ...type.caption, marginTop: 6, alignSelf: 'flex-end' },
   timeMine: { ...type.caption, color: 'rgba(255,255,255,0.75)', marginTop: 4, alignSelf: 'flex-end' },
   dailyTag: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 6 },

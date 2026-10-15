@@ -5,7 +5,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { buildChain } from './gemini';
+import { buildChain, DEFAULT_LIVE_MODELS, VOICES } from './gemini';
 import { colors, gradient, radius, space, type } from './theme';
 
 function Section({ icon, title, children }) {
@@ -109,6 +109,23 @@ export default function SettingsModal(p) {
               </Text>
             </Section>
 
+            <Section icon="mic-outline" title="Voice mode (Gemini Live)">
+              <Text style={type.small}>Pick the AI voice. These are Gemini's stock voices, not hers.</Text>
+              <View style={styles.voices}>
+                {VOICES.map((v) => (
+                  <Pressable key={v} onPress={() => p.setVoice(v)} style={[styles.voice, p.voice === v && styles.voiceOn]} accessibilityRole="button">
+                    <Text style={[styles.voiceText, p.voice === v && { color: colors.pinkSoft }]}>{v}</Text>
+                  </Pressable>
+                ))}
+              </View>
+              <Text style={[type.small, { marginTop: space.md, marginBottom: 6 }]}>Live model (leave empty for the newest available)</Text>
+              <TextInput style={styles.field} value={p.liveModel} onChangeText={p.setLiveModel} placeholder="Automatic"
+                autoCapitalize="none" autoCorrect={false} placeholderTextColor={colors.muted} />
+              <Text style={[type.caption, { marginTop: space.sm }]}>
+                Voice mode asks your key which Live models it can use and picks the newest, then falls back through: {DEFAULT_LIVE_MODELS.join(', ')}.
+              </Text>
+            </Section>
+
             <Section icon="notifications-outline" title="Daily reminder">
               <View style={styles.rowBetween}>
                 <Text style={[type.body, { flex: 1 }]}>Remind me to read today's update</Text>
@@ -170,6 +187,10 @@ const styles = StyleSheet.create({
   fb: { minWidth: 40, alignItems: 'center', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1, borderColor: colors.border },
   fbOn: { backgroundColor: colors.pinkGlow, borderColor: colors.pink },
   fbText: { color: colors.muted, fontSize: 13, fontWeight: '700' },
+  voices: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.md },
+  voice: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface2 },
+  voiceOn: { backgroundColor: colors.pinkGlow, borderColor: colors.pink },
+  voiceText: { color: colors.textDim, fontSize: 13.5, fontWeight: '600' },
   about: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginTop: space.lg, paddingHorizontal: 4 },
   footer: { paddingHorizontal: space.lg, paddingTop: space.md, borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border, backgroundColor: colors.surface },
   save: { borderRadius: radius.pill, paddingVertical: 15, alignItems: 'center' },

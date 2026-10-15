@@ -8,12 +8,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { askGemini, buildChain, DAILY_PROMPT, DEFAULT_MODEL, listModels } from './src/gemini';
+import { askGemini, buildChain, DAILY_PROMPT, DEFAULT_MODEL, DEFAULT_VOICE, listModels } from './src/gemini';
 import { getSetting, loadChat, saveChat, setSetting } from './src/storage';
 import { cancelDailyReminder, scheduleDailyReminder } from './src/notifications';
 import Bubble, { TypingBubble } from './src/Bubble';
 import Welcome from './src/Welcome';
 import SettingsModal from './src/SettingsModal';
+import VoiceMode from './src/VoiceMode';
 import { colors, gradient, radius, space, type } from './src/theme';
 
 const avatar = require('./assets/avatar.png');
@@ -54,6 +55,9 @@ function Chat() {
   const [modelsErr, setModelsErr] = useState('');
   const [dailyOn, setDailyOn] = useState(false);
   const [hour, setHour] = useState('9');
+  const [voice, setVoice] = useState(DEFAULT_VOICE);
+  const [liveModel, setLiveModel] = useState('');
+  const [voiceOpen, setVoiceOpen] = useState(false);
   const listRef = useRef(null);
   const messagesRef = useRef([]);
   messagesRef.current = messages;
@@ -94,13 +98,15 @@ function Chat() {
 
   useEffect(() => {
     (async () => {
-      const [key, mdl, fb, daily, h, chat, last] = await Promise.all([
+      const [key, mdl, fb, daily, h, chat, last, vc, lm] = await Promise.all([
         getSetting('apiKey'), getSetting('model', DEFAULT_MODEL), getSetting('fallbacks', '[]'),
         getSetting('dailyOn'), getSetting('hour', '9'), loadChat(), getSetting('lastUpdate'),
+        getSetting('voice', DEFAULT_VOICE), getSetting('liveModel'),
       ]);
       let fbList = [];
       try { fbList = JSON.parse(fb); } catch {}
       setApiKey(key); setModel(mdl); setFallbacks(fbList); setDailyOn(daily === '1'); setHour(h);
+      setVoice(vc); setLiveModel(lm);
       setMessages(chat); messagesRef.current = chat;
       setReady(true);
       if (!key) return; // the welcome screen offers "Add API key"
@@ -135,6 +141,18 @@ function Chat() {
     sendMessage(text, pending);
     if (apiKey && !busy) { setInput(''); setPending(null); }
   };
+
+  const openVoice = () => {
+    Keyboard.dismiss();
+    if (!apiKey) { setShowSettings(true); return; }
+    setVoiceOpen(true);
+  };
+
+  // The call's transcript is kept in the chat so it can be read later.
+  const closeVoice = useCallback((turns) => {
+    setVoiceOpen(false);
+    (turns || []).forEach((t) => push({ role: t.role === 'user' ? 'user' : 'model', text: t.text, kind: 'voice' }));
+  }, [push]);
 
   const retry = () => {
     if (busy) return;
@@ -171,6 +189,8 @@ function Chat() {
     await setSetting('apiKey', apiKey.trim());
     await setSetting('model', model.trim() || DEFAULT_MODEL);
     await setSetting('fallbacks', JSON.stringify(fallbacks));
+    await setSetting('voice', voice);
+    await setSetting('liveModel', liveModel.trim());
     await setSetting('dailyOn', dailyOn ? '1' : '');
     const h = Math.min(23, Math.max(0, parseInt(hour, 10) || 9));
     await setSetting('hour', String(h));
@@ -188,7 +208,8 @@ function Chat() {
     return <View style={styles.center}><ActivityIndicator color={colors.pink} /></View>;
   }
 
-  const canSend = !!(input.trim() || pending) && !busy;
+  const hasContent = !!(input.trim() || pending);
+  const canSend = hasContent && !busy;
 
   return (
     <View style={[styles.root, { paddingTop: top, paddingLeft: insets.left, paddingRight: insets.right }]}>
@@ -265,14 +286,17 @@ function Chat() {
               multiline
               selectionColor={colors.pink}
             />
-            <Pressable onPress={send} disabled={!canSend} accessibilityRole="button" accessibilityLabel="Send">
-              <LinearGradient colors={canSend ? gradient : [colors.border, colors.border]} style={styles.send}>
-                <Ionicons name="arrow-up" size={20} color={canSend ? '#fff' : colors.muted} />
+            <Pressable onPress={hasContent ? send : openVoice} disabled={hasContent ? !canSend : busy}
+              accessibilityRole="button" accessibilityLabel={hasContent ? 'Send' : 'Start voice mode'}>
+              <LinearGradient colors={hasContent && !canSend ? [colors.border, colors.border] : gradient} style={styles.send}>
+                <Ionicons name={hasContent ? 'arrow-up' : 'mic'} size={20} color={hasContent && !canSend ? colors.muted : '#fff'} />
               </LinearGradient>
             </Pressable>
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      <VoiceMode visible={voiceOpen} apiKey={apiKey} voice={voice} preferredModel={liveModel} onClose={closeVoice} />
 
       <SettingsModal
         visible={showSettings} onClose={() => setShowSettings(false)} onSave={saveSettings} kbOpen={kbOpen}
@@ -280,6 +304,7 @@ function Chat() {
         apiKey={apiKey} setApiKey={setApiKey} model={model} setModel={setModel}
         fallbacks={fallbacks} toggleFallback={toggleFallback}
         models={models} modelsBusy={modelsBusy} modelsErr={modelsErr} onRefresh={() => loadModels(apiKey)}
+        voice={voice} setVoice={setVoice} liveModel={liveModel} setLiveModel={setLiveModel}
         dailyOn={dailyOn} setDailyOn={setDailyOn} hour={hour} setHour={setHour}
       />
     </View>

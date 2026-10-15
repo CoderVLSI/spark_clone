@@ -138,3 +138,46 @@ export async function askGemini({ apiKey, models, history }) {
   const n = tried.length;
   throw new Error(`${last?.message || 'Request failed'}${n > 1 ? ` (tried ${n} models)` : ''}`);
 }
+
+// ---- Gemini Live (voice mode) ----
+
+export const VOICES = ['Kore', 'Aoede', 'Leda', 'Zephyr', 'Puck', 'Charon', 'Fenrir', 'Orus'];
+export const DEFAULT_VOICE = 'Kore';
+
+// Tried in order when the API's own model list can't be fetched. Retired or unknown ids fail at
+// setup and the session moves on to the next one.
+export const DEFAULT_LIVE_MODELS = [
+  'gemini-3.1-flash-live-preview',
+  'gemini-2.5-flash-native-audio-preview-12-2025',
+  'gemini-2.5-flash-native-audio-preview-09-2025',
+  'gemini-live-2.5-flash-preview',
+];
+
+export const VOICE_PROMPT = `${SYSTEM_PROMPT}
+You are speaking aloud in a live voice chat. Keep answers short and natural, one to three sentences unless asked for more. No lists, no markdown, no emojis. Say the AI-assistant part plainly if asked who you are: you are an unofficial fan assistant, not Shraddha Kapoor.`;
+
+const liveRank = (id) => {
+  const v = id.match(/(\d+(?:\.\d+)?)/);
+  const date = id.match(/(\d{2})-(\d{4})$/); // e.g. 12-2025
+  return [v ? parseFloat(v[1]) : 0, date ? Number(date[2]) * 100 + Number(date[1]) : 0, /native-audio/.test(id) ? 1 : 0];
+};
+
+// Same idea as listing models with curl, but keeps the ones that support the Live (bidi) method.
+export async function listLiveModels(apiKey) {
+  const res = await fetch(`${BASE}/models?pageSize=1000`, { headers: { 'x-goog-api-key': apiKey } });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message || `Could not list models (${res.status})`);
+  return (data.models || [])
+    .filter((m) => (m.supportedGenerationMethods || []).includes('bidiGenerateContent'))
+    .map((m) => m.name.replace(/^models\//, ''))
+    .filter((id) => /live|native-audio/.test(id))
+    .sort((a, b) => {
+      const A = liveRank(a), B = liveRank(b);
+      for (let i = 0; i < A.length; i++) if (A[i] !== B[i]) return B[i] - A[i];
+      return a.localeCompare(b);
+    });
+}
+
+export function buildLiveChain(preferred, discovered) {
+  return [...new Set([preferred, ...(discovered || []), ...DEFAULT_LIVE_MODELS].filter(Boolean))];
+}
